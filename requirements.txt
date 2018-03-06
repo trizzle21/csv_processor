@@ -1,0 +1,5 @@
+Django==2.0
+psycopg2
+djangorestframework
+requests==2.18.4
+coreapi
