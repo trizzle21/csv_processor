@@ -9,7 +9,6 @@ from collections import OrderedDict
 
 from api.services import PostmanAPI
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -21,7 +20,7 @@ class CSVView(APIView):
 
     def post(self, request, format=None):
         """
-        Return a list of all users.
+            Parses a CSV and sends it to POSTMAN API
         """
         file_obj = request.FILES['file']
 
@@ -40,9 +39,6 @@ class CSVView(APIView):
                     values = str(row).split(',')
                     imported_dict.append(OrderedDict(zip(header, values)))
 
-
-
             resp = self.postman.add_collection(imported_dict)
-
 
         return Response(resp)
