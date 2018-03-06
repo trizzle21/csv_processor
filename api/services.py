@@ -24,6 +24,7 @@ class PostmanAPI(object):
     def headers(self):
         return {
             'Content-Type': 'application/json',
+            'Content-Disposition': 'form-data'
         }
 
 
@@ -37,6 +38,7 @@ class PostmanAPI(object):
         url = self.base_url + url
         req = Request(method, url, data=data, headers=self.headers)
         prepped = req.prepare()
+        prepped.body = data
 
         response = self.session.send(prepped,
                                      stream=self.stream,
@@ -50,6 +52,6 @@ class PostmanAPI(object):
 
 
     def add_collection(self, data):
-        url = 'api/json'
+        url = 'api/json/'
 
-        return self.send_request(url, method='POST', json=True, data=json.dumps(compiled_data))
+        return self.send_request(url, method='POST', json=True, data=data)
