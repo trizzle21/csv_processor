@@ -8,7 +8,6 @@ class JSONImportLog(models.Model):
     modified = models.DateTimeField()
     data = JSONField()
 
-
     def save(self, *args, **kwargs):
         ''' On save, update timestamps '''
         if not self.id:

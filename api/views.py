@@ -29,24 +29,29 @@ class CSVView(APIView):
         file_obj = request.FILES['file']
 
         with open(file_obj.read(), newline='') as csvfile:
-            reader = csv.reader(csvfile, delimiter=' ', quotechar='|')
-            first_row = True
-            header = []
-
-            imported_dict = []
-
-            for row in reader:               
-                if first_row:
-                    header = str(row).split(',')
-                    first_row = False
-                else:
-                    values = str(row).split(',')
-                    imported_dict.append(OrderedDict(zip(header, values)))
-
-            imported_dict = json.dumps(imported_dict)
+            imported_dict = self._csv_to_json(csvfile)
             resp = self.postman.add_collection(imported_dict)
 
         return Response(resp)
+
+    @staticmethod
+    def _csv_to_json(csvfile):
+        reader = csv.reader(csvfile, delimiter=' ', quotechar='|')
+        first_row = True
+        header = []
+
+        imported_dict = []
+
+        for row in reader:               
+            if first_row:
+                header = str(row).split(',')
+                first_row = False
+            else:
+                values = str(row).split(',')
+                imported_dict.append(OrderedDict(zip(header, values)))
+        imported_dict = json.dumps(imported_dict)
+        return imported_dict
+
 
 class JSONView(APIView):
 
@@ -59,7 +64,6 @@ class JSONView(APIView):
         """
             Parses a CSV and sends it to POSTMAN API
         """
-        print (request.data)
         import_log = JSONImportLog(data=request.data)
         try:
             import_log.save()
@@ -67,4 +71,5 @@ class JSONView(APIView):
             raise Exception(e)
         
         return Response()
+
 
