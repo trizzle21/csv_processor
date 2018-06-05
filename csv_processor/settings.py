@@ -15,7 +15,7 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-from csv_processor.secret_settings import *
+from csv_processor.secret_settings import SECRET_KEY
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
@@ -24,7 +24,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['0.0.0.0']
 
-
+SECRET_KEY = SECRET_KEY
 # Application definition
 
 INSTALLED_APPS = [
