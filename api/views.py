@@ -1,5 +1,5 @@
 import csv
-import json 
+import json
 import logging
 
 from rest_framework.views import APIView
@@ -17,8 +17,8 @@ logger = logging.getLogger(__name__)
 
 STRATEGIES = {
     'eggplant': EggPlantStrategy,
-    'Bank of the USA': BankStrategy, 
-    'whompa': None, 
+    'Bank of the USA': BankStrategy,
+    'whompa': None,
     'default': DefaultStrategy
 }
 
@@ -52,7 +52,7 @@ class CSVView(APIView):
 
         imported_dict = []
         strategy = STRATEGIES.get(customer, 'default')
-        for row in reader:               
+        for row in reader:
             if first_row:
                 header = str(row).split(',')
                 first_row = False
@@ -60,10 +60,10 @@ class CSVView(APIView):
                 values = str(row).split(',')
                 try:
                     strategy.process(values)
-                except:
-                    JSONImportLogSerializer
+                except Exception as e:
+                    errors.append(e)
                 imported_dict.append(OrderedDict(zip(header, values)))
-        
+
         csv_log = CSVExportLog()
         CSVExportLog.errors = str(errors)
         csv_log.save()
@@ -88,5 +88,5 @@ class JSONView(APIView):
             import_log.save()
         except Error as e:
             raise Exception(e)
-        
+
         return Response()
