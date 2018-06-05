@@ -6,3 +6,4 @@ class JSONImportLogSerializer(serializers.Serializer):
     created = serializers.DateTimeField(read_only=True)
     modified = serializers.DateTimeField(read_only=True)
     data = serializers.JSONField(read_only=True)
+    

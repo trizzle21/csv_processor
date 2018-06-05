@@ -3,6 +3,7 @@ from django.contrib.postgres.fields import JSONField
 
 from django.utils import timezone
 
+
 class JSONImportLog(models.Model):
     created = models.DateTimeField(editable=False)
     modified = models.DateTimeField()
@@ -14,6 +15,7 @@ class JSONImportLog(models.Model):
             self.created = timezone.now()
         self.modified = timezone.now()
         return super(JSONImportLog, self).save(*args, **kwargs)
+
 
 class CSVExportLog(models.Model):
     created = models.DateTimeField(editable=False)

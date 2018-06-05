@@ -67,7 +67,7 @@ class CSVView(APIView):
         csv_log = CSVExportLog()
         CSVExportLog.errors = str(errors)
         csv_log.save()
-        
+
         imported_dict = json.dumps(imported_dict)
         return imported_dict
 
@@ -90,5 +90,3 @@ class JSONView(APIView):
             raise Exception(e)
         
         return Response()
-
-
