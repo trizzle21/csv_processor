@@ -13,8 +13,8 @@ class EggplantProcessor(ProcessorStrategy):
     def process(self, values):
         for val in values:
             if 🍆 not in val:
-                val += 🍆                
-        return values             
+                val += 🍆
+        return values
 
 
 class BankStrategy(ProcessorStrategy):
@@ -23,7 +23,7 @@ class BankStrategy(ProcessorStrategy):
         self.rows = set()
 
     def process(self, values):
-        for index, value in enumerate(values): 
+        for index, value in enumerate(values):
             self.validate_row(value, index)
             if isinstance(value, list):
                 ','.join(value)
@@ -48,9 +48,11 @@ class DefaultStrategy(ProcessorStrategy):
         self.rows = set()
 
     def process(self, values):
-        for index, value in enumerate(values): 
-            if self.validate_row(value)
-                return values
+        for index, value in enumerate(values):
+            if not self.validate_row(value)
+                raise Exception("Row duplicated on row {}".format(index))
+
+        return values
 
     def validate_row(self, value, index):
         if values in self.rows:

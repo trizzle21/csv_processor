@@ -1,5 +1,5 @@
 import csv
-import json 
+import json
 import logging
 
 from rest_framework.views import APIView
@@ -70,4 +70,18 @@ class CSVView(APIView):
         json_of_csv_rows = json.dumps(csv_row_dicts)
         return json_of_csv_rows
 
+class CSVImportRecordView(APIView):
+
+    def get(self, request, format=None):
+        """
+            Parses a CSV and sends it to POSTMAN API
+        """
+        start_date = request.GET.get('start_date', None)
+        end_date = request.GET.get('end_date', None)
+
+        query_ = Q(modified__gte=start_date) && Q(modified__lte=end_date)
+        #TODO
+        import_records = CSVImportRecord.objects.filter(modified)
+
+        return Response(resp)
 
