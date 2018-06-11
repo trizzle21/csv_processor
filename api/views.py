@@ -78,12 +78,16 @@ class CSVImportRecordView(APIView):
 
     def get(self, request, format=None):
         """
-            Parses a CSV and sends it to POSTMAN API
+            Returns a JSON of CSV Import Records, can be filtered by start, end dates
+            and customers
         """
         start_date = request.GET.get('start_date', None)
         end_date = request.GET.get('end_date', None)
+        customer = request.GET.get('customer', None)
 
         optional_query = Q(modified__gte=start_date) && Q(modified__lte=end_date)
+        if customer:
+            optional_query &= Q(customer=customer)
 
         import_records = CSVImportRecord.objects.filter(optional_query)
         serialized_import_records = CSVImportRecordSerializer(import_records)
