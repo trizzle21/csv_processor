@@ -8,7 +8,6 @@ from csv_processor.settings import API_ENDPOINT
 
 class PostmanAPI(object):
 
-
     def __init__(self):
         self.set_session()
         self.base_url = API_ENDPOINT
@@ -19,14 +18,12 @@ class PostmanAPI(object):
         self.session = Session()
         self.session.headers.update(self.headers)
 
-
     @property
     def headers(self):
         return {
             'Content-Type': 'application/json',
             'Content-Disposition': 'form-data'
         }
-
 
     def build_error(self, url, content, status_code):
         error = ("Error accessing {} because {}, status is {}").format(url, 
@@ -48,8 +45,6 @@ class PostmanAPI(object):
             self.build_error(url, response.content, response.status_code)
         else:
             return response.content
-
-
 
     def add_collection(self, data):
         url = 'api/json/'
