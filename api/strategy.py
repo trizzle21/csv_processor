@@ -37,7 +37,7 @@ class BankStrategy(ProcessorStrategy):
 
     def validate_row(self, value, index):
         if values['unique_id'].strip() in self.rows:
-            raise Exception("Row duplicated on row {}".format(index))
+            raise StrategyException("Row duplicated on row {}".format(index))
         else:
             self.rows.add(str(values['unique_id']))
 
@@ -54,6 +54,9 @@ class DefaultStrategy(ProcessorStrategy):
 
     def validate_row(self, value, index):
         if values in self.rows:
-            raise Exception("Row duplicated on row {}".format(index))
+            raise StrategyException("Row duplicated on row {}".format(index))
         else:
             self.rows.add(str(value))
+
+class StrategyException(Exception):
+    pass

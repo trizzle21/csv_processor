@@ -4,21 +4,20 @@ import logging
 
 from rest_framework.views import APIView
 from django.http import JsonResponse
+from strategy import EggPlantStrategy, BankStrategy, DefaultStrategy, StrategyException
 
 from rest_framework.response import Response
 from rest_framework.parsers import FileUploadParser, JSONParser
 from collections import OrderedDict
 
 from api.services import PostmanAPI
-from api.models import JSONImportLog, CSVExportLog
-from api.serializers import JSONImportLogSerializer
+from api.models import JSONImportLog, CSVImportLog
 
 logger = logging.getLogger(__name__)
 
 STRATEGIES = {
     'eggplant': EggPlantStrategy,
     'Bank of the USA': BankStrategy, 
-    'whompa': None, 
     'default': DefaultStrategy
 }
 
@@ -35,58 +34,40 @@ class CSVView(APIView):
             Parses a CSV and sends it to POSTMAN API
         """
         file_obj = request.FILES['file']
-        cust_strategy = request.params.get('strategy', None)
+        customer = request.POST.get('customer', None)
 
         with open(file_obj.read(), newline='') as csvfile:
-            imported_dict = self._csv_to_json(csvfile, cust_strategy)
-            resp = self.postman.add_collection(imported_dict)
+            processed_list_from_csv = self._csv_to_json(csvfile, cust_strategy)
+            resp = self.postman.add_collection(processed_dictionary_from_csv)
 
         return Response(resp)
 
-    @staticmethod
-    def _csv_to_json(csvfile, customer):
+    def _record_log_file(self, errors):
+        csv_log = CSVExportLog()
+        CSVImportLog.errors = str(errors)
+        CSVImportLog.customer = self.customer_strategy
+        csv_log.save()
+
+    def _csv_to_json(self, csvfile, customer):
         reader = csv.reader(csvfile, delimiter=' ', quotechar='|')
         first_row = True
         header = []
         errors = []
 
-        imported_dict = []
-        strategy = STRATEGIES.get(customer, 'default')
+        csv_row_dicts = []
+        self.customer_strategy = STRATEGIES.get(customer, 'default')
+        header = str(next(reader)).split(',')        
         for row in reader:               
-            if first_row:
-                header = str(row).split(',')
-                first_row = False
-            else:
-                values = str(row).split(',')
-                try:
-                    strategy.process(values)
-                except:
-                    JSONImportLogSerializer
-                imported_dict.append(OrderedDict(zip(header, values)))
+            values = str(row).split(',')
+            try:
+                customer_strategy.process(values)
+            except StrategyException as error:
+                errors.append(error)
+            imported_dict.append(OrderedDict(zip(header, values)))
         
-        csv_log = CSVExportLog()
-        CSVExportLog.errors = str(errors)
-        csv_log.save()
+        self._record_log_file(errors)
 
-        imported_dict = json.dumps(imported_dict)
-        return imported_dict
+        json_of_csv_rows = json.dumps(csv_row_dicts)
+        return json_of_csv_rows
 
 
-class JSONView(APIView):
-
-    def get(self, request, format=None):
-        import_logs = JSONImportLog.objects.all()
-        serializer = JSONImportLogSerializer(import_logs, many=True)
-        return JsonResponse(serializer.data, safe=False)
-
-    def post(self, request, format=None):
-        """
-            Parses a CSV and sends it to POSTMAN API
-        """
-        import_log = JSONImportLog(data=request.data)
-        try:
-            import_log.save()
-        except Error as e:
-            raise Exception(e)
-        
-        return Response()

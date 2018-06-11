@@ -4,7 +4,7 @@ from django.contrib.postgres.fields import JSONField
 from django.utils import timezone
 
 
-class JSONImportLog(models.Model):
+class JSONImportRecord(models.Model):
     created = models.DateTimeField(editable=False)
     modified = models.DateTimeField()
     data = JSONField()
@@ -17,9 +17,10 @@ class JSONImportLog(models.Model):
         return super(JSONImportLog, self).save(*args, **kwargs)
 
 
-class CSVExportLog(models.Model):
+class CSVImportRecord(models.Model):
     created = models.DateTimeField(editable=False)
     modified = models.DateTimeField()
+    
     errors = models.TextField()
     data = JSONField()
 
