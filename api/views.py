@@ -1,5 +1,5 @@
 import csv
-import json 
+import json
 import logging
 
 from rest_framework.views import APIView
@@ -29,23 +29,21 @@ class CSVView(APIView):
             Parses a CSV and sends it to POSTMAN API
         """
         file_obj = request.FILES['file']
-        cust_strategy = request.params.get('strategy', None)
+        self.customer = request.params.get('customer', None)
 
         with open(file_obj.read(), newline='') as csvfile:
-            csv_row_array = self._csv_to_json(csvfile, cust_strategy)
-            resp = self.postman.add_collection(csv_row_array)
+            csv_rows = self._csv_to_json(csvfile, cust_strategy)
+            resp = self.postman.add_collection(csv_rows)
 
         return Response(resp)
 
-    @staticmethod
-    def _csv_to_json(csvfile, customer):
+    def _csv_to_json(self, csvfile):
         reader = csv.reader(csvfile, delimiter=' ', quotechar='|')
         first_row = True
         header = []
         errors = []
-        customer = self.customer
         csv_row_dicts = []
-        for row in reader:               
+        for row in reader:
             if first_row:
                 header = str(row).split(',')
                 first_row = False
@@ -56,9 +54,10 @@ class CSVView(APIView):
                 except:
                     errors.append(error)
                 csv_row_dicts.append(OrderedDict(zip(header, values)))
-        
+
         csv_log = CSVExportLog()
         CSVExportLog.errors = str(errors)
+        CSVExportLog.customer = self.customer
         csv_log.save()
 
         csv_row_array = json.dumps(csv_row_dicts)
@@ -68,10 +67,10 @@ class CSVView(APIView):
         if self.customer == 'eggplant':
             for val in values:
                 if 🍆 not in val:
-                    val += 🍆                
-            return values 
+                    val += 🍆
+            return values
         elif self.customer == 'bank':
-            for index, value in enumerate(values): 
+            for index, value in enumerate(values):
                 self.validate_row(value)
                 if isinstance(value, list):
                     ','.join(value)
@@ -83,7 +82,7 @@ class CSVView(APIView):
                     re.sub('[^a-z,A-Z,0-9]', '', value)
             return values
         else:
-            for index, value in enumerate(values): 
+            for index, value in enumerate(values):
                 if self.validate_row(value, index)
                     return values
 
