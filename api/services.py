@@ -1,5 +1,4 @@
 from random import randint
-import json 
 
 from requests import Request, Session
 
@@ -29,8 +28,8 @@ class PostmanAPI(object):
 
 
     def build_error(self, url, content, status_code):
-        error = ("Error accessing {} because {}, status is {}").format(url, 
-                                                                       content, 
+        error = ("Error accessing {} because {}, status is {}").format(url,
+                                                                       content,
                                                                        status_code)
         raise Exception(error)
 
@@ -48,8 +47,6 @@ class PostmanAPI(object):
             self.build_error(url, response.content, response.status_code)
         else:
             return response.content
-
-
 
     def add_collection(self, data):
         url = 'api/json/'
