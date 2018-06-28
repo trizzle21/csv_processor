@@ -32,7 +32,7 @@ class CSVView(APIView):
         self.customer = request.params.get('customer', None)
 
         with open(file_obj.read(), newline='') as csvfile:
-            csv_rows = self._csv_to_json(csvfile, cust_strategy)
+            csv_rows = self._csv_to_json(csvfile)
             resp = self.postman.add_collection(csv_rows)
 
         return Response(resp)
@@ -71,7 +71,7 @@ class CSVView(APIView):
             return values
         elif self.customer == 'bank':
             for index, value in enumerate(values):
-                self.validate_row(value)
+                self.validate_row(index, value)
                 if isinstance(value, list):
                     ','.join(value)
                 elif re.match(value, '/d{9}'):
